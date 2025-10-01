@@ -65,7 +65,9 @@ export class ResultFormatter {
       for (const test of aiTests) {
         const icon = test.passed ? chalk.green('  ✓') : chalk.red('  ✗');
         const args = test.args && test.args.length > 0 ? ` ${test.args.join(' ')}` : '';
-        lines.push(`  ${icon} ${test.scenarioName || test.command.name}${args} ${chalk.gray(`(${test.duration}ms)`)}`);
+        lines.push(
+          `  ${icon} ${test.scenarioName || test.command.name}${args} ${chalk.gray(`(${test.duration}ms)`)}`,
+        );
         if (!test.passed && test.error) {
           lines.push(`      ${chalk.red(test.error)}`);
         }
@@ -77,7 +79,9 @@ export class ResultFormatter {
       lines.push(chalk.bold.yellow('  🎯 Default Tests'));
       for (const test of defaultTests) {
         const icon = test.passed ? chalk.green('  ✓') : chalk.red('  ✗');
-        lines.push(`  ${icon} ${test.scenarioName || test.command.name} ${chalk.gray(`(${test.duration}ms)`)}`);
+        lines.push(
+          `  ${icon} ${test.scenarioName || test.command.name} ${chalk.gray(`(${test.duration}ms)`)}`,
+        );
         if (!test.passed && test.error) {
           lines.push(`      ${chalk.red(test.error)}`);
         }
@@ -89,7 +93,9 @@ export class ResultFormatter {
       lines.push(chalk.bold.magenta('  🎨 Custom Tests'));
       for (const test of customTests) {
         const icon = test.passed ? chalk.green('  ✓') : chalk.red('  ✗');
-        lines.push(`  ${icon} ${test.scenarioName || test.command.name} ${chalk.gray(`(${test.duration}ms)`)}`);
+        lines.push(
+          `  ${icon} ${test.scenarioName || test.command.name} ${chalk.gray(`(${test.duration}ms)`)}`,
+        );
         if (!test.passed && test.error) {
           lines.push(`      ${chalk.red(test.error)}`);
         }
