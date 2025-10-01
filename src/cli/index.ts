@@ -27,6 +27,9 @@ program
   .option('-t, --timeout <ms>', 'Timeout per test in milliseconds', '30000')
   .option('--no-help', 'Skip --help tests')
   .option('--no-version', 'Skip --version tests')
+  .option('--ai-provider <provider>', 'AI provider (anthropic, openai, google, groq)')
+  .option('--ai-token <token>', 'AI API token/key')
+  .option('--ai-model <model>', 'AI model name (optional, auto-detects best)')
   .option('-v, --verbose', 'Verbose output')
   .action(async (packageSource: string, options: any) => {
     const spinner = ora('Starting tests...').start();
@@ -36,12 +39,24 @@ program
       const testRunner = new TestRunner();
       const formatter = new ResultFormatter();
 
+      // Build AI config if provided
+      let aiConfig;
+      if (options.aiProvider && options.aiToken) {
+        aiConfig = {
+          provider: options.aiProvider,
+          apiKey: options.aiToken,
+          model: options.aiModel,
+        };
+      }
+
       const config: Partial<TestConfig> = {
         package: packageSource,
         nodeVersions: options.node.split(',').map((v: string) => v.trim()),
         parallel: options.parallel,
         keepContainers: options.keepContainers,
         timeout: parseInt(options.timeout, 10),
+        skipDefaultTests: options.aiProvider ? true : false, // Skip default tests if using AI
+        ai: aiConfig,
       };
 
       const result = await testRunner.testPackage(packageSource, config, (event) => {

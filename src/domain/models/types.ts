@@ -62,6 +62,36 @@ export interface TestConfig {
   readonly keepContainers: boolean;
   /** Additional test scenarios */
   readonly customTests?: readonly CustomTest[];
+  /** Realistic test scenarios with setup and validation */
+  readonly scenarios?: readonly TestScenario[];
+  /** Skip default CLI tests (--help, --version) */
+  readonly skipDefaultTests?: boolean;
+  /** AI configuration for automatic scenario generation */
+  readonly ai?: AIConfig;
+}
+
+/**
+ * AI Provider configuration
+ */
+export interface AIConfig {
+  /** AI provider */
+  readonly provider: AIProvider;
+  /** API key/token */
+  readonly apiKey: string;
+  /** Model name (optional - auto-detect best model) */
+  readonly model?: string;
+  /** Base URL for API (optional) */
+  readonly baseUrl?: string;
+}
+
+/**
+ * Supported AI providers
+ */
+export enum AIProvider {
+  ANTHROPIC = 'anthropic',
+  OPENAI = 'openai',
+  GOOGLE = 'google',
+  GROQ = 'groq',
 }
 
 /**
@@ -88,6 +118,80 @@ export interface TestExpectation {
   readonly stderr?: string | RegExp;
   /** Should not timeout */
   readonly completes?: boolean;
+}
+
+/**
+ * Realistic test scenario with setup and validation
+ */
+export interface TestScenario {
+  /** Scenario name */
+  readonly name: string;
+  /** Description of what this tests */
+  readonly description?: string;
+  /** Setup phase - create files/directories */
+  readonly setup?: TestSetup;
+  /** Command to execute */
+  readonly command: string;
+  /** Command arguments */
+  readonly args?: readonly string[];
+  /** Validation checks */
+  readonly validate: TestValidation;
+}
+
+/**
+ * Test setup configuration
+ */
+export interface TestSetup {
+  /** Files to create before test */
+  readonly files?: readonly TestFile[];
+  /** Directories to create */
+  readonly directories?: readonly string[];
+  /** npm packages to install in test project */
+  readonly dependencies?: readonly string[];
+  /** Initialize as npm project */
+  readonly initNpm?: boolean;
+}
+
+/**
+ * File to create in test environment
+ */
+export interface TestFile {
+  /** File path relative to test directory */
+  readonly path: string;
+  /** File content */
+  readonly content: string;
+}
+
+/**
+ * Validation configuration
+ */
+export interface TestValidation {
+  /** Expected exit code (default: 0) */
+  readonly exitCode?: number;
+  /** Expected stdout patterns */
+  readonly stdout?: readonly (string | RegExp)[];
+  /** Expected stderr patterns */
+  readonly stderr?: readonly (string | RegExp)[];
+  /** Files that should exist after execution */
+  readonly filesExist?: readonly string[];
+  /** Files that should not exist */
+  readonly filesNotExist?: readonly string[];
+  /** File content validations */
+  readonly fileContents?: readonly FileContentValidation[];
+}
+
+/**
+ * Validation for file content
+ */
+export interface FileContentValidation {
+  /** File path to check */
+  readonly path: string;
+  /** Content should match these patterns */
+  readonly contains?: readonly (string | RegExp)[];
+  /** Content should not match these patterns */
+  readonly notContains?: readonly (string | RegExp)[];
+  /** Exact content match */
+  readonly equals?: string;
 }
 
 /**

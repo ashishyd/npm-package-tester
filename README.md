@@ -31,6 +31,7 @@ When you publish an npm package with CLI commands, you need to verify:
 - ⚡ **Parallel Testing**: Run tests concurrently for speed
 - 📊 **Detailed Reports**: Clear pass/fail results with logs
 - 🎯 **Smart Testing**: Automatically tries --help, --version, and no-args
+- 🤖 **AI-Powered Scenarios**: Generate realistic test scenarios using Claude, GPT-4, Gemini, or Groq
 - 💨 **Lightweight**: Minimal dependencies, fast execution
 
 ## Quick Start
@@ -47,6 +48,12 @@ npt test ./my-package
 
 # Test across multiple Node versions
 npt test prettier --node 16,18,20
+
+# AI-powered intelligent testing (generates realistic scenarios)
+npt test env-type-generator --ai-provider anthropic --ai-token YOUR_API_KEY
+
+# Use OpenAI instead
+npt test my-package --ai-provider openai --ai-token YOUR_OPENAI_KEY
 
 # Keep containers for debugging
 npt test --keep-containers
@@ -189,36 +196,59 @@ console.log(`Passed: ${results.passed}/${results.total}`);
 Usage: npt test [options] <package>
 
 Options:
-  -n, --node <versions>     Node versions (comma-separated)
-  -p, --parallel            Run tests in parallel
-  -k, --keep-containers     Keep containers after test
-  -t, --timeout <ms>        Timeout per test (default: 30000)
-  --no-help                 Skip --help tests
-  --no-version              Skip --version tests
-  -v, --verbose             Verbose output
+  -n, --node <versions>        Node versions (comma-separated)
+  -p, --parallel               Run tests in parallel
+  -k, --keep-containers        Keep containers after test
+  -t, --timeout <ms>           Timeout per test (default: 30000)
+  --ai-provider <provider>     AI provider (anthropic, openai, google, groq)
+  --ai-token <token>           AI API token/key
+  --ai-model <model>           AI model name (optional, auto-detects best)
+  --no-help                    Skip --help tests
+  --no-version                 Skip --version tests
+  -v, --verbose                Verbose output
 ```
 
-## Real-World Example
+## AI-Powered Testing
 
-Testing our `cyclic-dependency-fixer` package:
+Instead of just testing `--help` and `--version`, use AI to generate realistic test scenarios:
 
 ```bash
-npt test cyclic-dependency-fixer
+npt test env-type-generator --ai-provider anthropic --ai-token YOUR_TOKEN
 ```
 
-**Output:**
+The AI will:
+1. 📖 Analyze the package README and CLI help
+2. 🧠 Understand what the package does
+3. 🎯 Generate realistic test scenarios with:
+   - Appropriate input files
+   - Realistic command arguments
+   - Expected output validation
+4. ✅ Validate file creation, content, and exit codes
+
+**Example AI-Generated Scenarios:**
 ```
-📦 Analyzing: cyclic-dependency-fixer
-✓ Found 2 commands: cycfix, cyclic-dependency-fixer
+🤖 Generating test scenarios with AI...
+✨ Generated 4 AI test scenarios
 
 🐳 Node 20
-  ✓ cycfix --help          Shows usage information
-  ✓ cycfix --version       Shows v0.1.0
-  ✓ cycfix detect --help   Shows detect command help
-  ✓ cycfix fix --help      Shows fix command help
+  ✓ basic-env-file-generation (1400ms)
+  ✓ env-with-comments (1706ms)
+  ✓ nested-env-variables (5040ms)
+  ✓ strict-mode-with-custom-output (1517ms)
 
 📊 4/4 tests passed ✅
 ```
+
+### Supported AI Providers
+
+| Provider | Model | Setup |
+|----------|-------|-------|
+| **Anthropic** | Claude Sonnet 4.5 | Get key from [console.anthropic.com](https://console.anthropic.com) |
+| **OpenAI** | GPT-4o | Get key from [platform.openai.com](https://platform.openai.com) |
+| **Google** | Gemini 2.0 Flash | Get key from [ai.google.dev](https://ai.google.dev) |
+| **Groq** | Llama 3.3 70B | Get key from [console.groq.com](https://console.groq.com) |
+
+The best model for each provider is automatically selected.
 
 ## Architecture
 
@@ -228,6 +258,9 @@ npm-package-tester
 ├── CommandDetector      # Identifies CLI binaries
 ├── DockerManager        # Creates/manages containers
 ├── TestRunner           # Executes commands in containers
+├── ScenarioRunner       # Runs AI-generated test scenarios
+├── ScenarioGenerator    # Generates scenarios using AI
+├── AIProvider           # Multi-provider AI abstraction (Claude, GPT-4, Gemini, Groq)
 ├── ResultFormatter      # Pretty output
 └── CLI                  # User interface
 ```
@@ -235,7 +268,8 @@ npm-package-tester
 ### Clean Architecture
 
 - **Domain**: Types, interfaces (no dependencies)
-- **Application**: Business logic (PackageAnalyzer, TestRunner)
+- **Application**: Business logic (PackageAnalyzer, TestRunner, ScenarioRunner)
+- **AI**: AI providers and scenario generation
 - **Infrastructure**: Docker, file system (external concerns)
 - **CLI**: User interface (commander, chalk)
 
@@ -244,6 +278,7 @@ npm-package-tester
 - Docker installed and running
 - Node.js >= 16
 - npm or yarn
+- (Optional) AI provider API key for intelligent test generation
 
 ## Limitations
 
@@ -251,9 +286,12 @@ npm-package-tester
 - Requires Docker (no Windows native support yet)
 - Can't test interactive prompts automatically
 - Network-dependent (pulls Docker images)
+- AI features require API credits
 
 ## Roadmap
 
+- [x] AI-powered test scenario generation
+- [x] Multi-provider AI support (Anthropic, OpenAI, Google, Groq)
 - [ ] Support testing interactive CLIs
 - [ ] Cloud runners (no local Docker needed)
 - [ ] Performance benchmarking

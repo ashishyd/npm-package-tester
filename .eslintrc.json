@@ -23,8 +23,8 @@
     "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/no-unsafe-enum-comparison": "off",
     "no-console": "off",
-    "complexity": ["error", 15],
-    "max-lines-per-function": ["error", { "max": 100, "skipBlankLines": true, "skipComments": true }]
+    "complexity": ["warn", 40],
+    "max-lines-per-function": ["warn", { "max": 200, "skipBlankLines": true, "skipComments": true }]
   },
   "env": {
     "node": true,

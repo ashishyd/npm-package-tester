@@ -150,6 +150,38 @@ export class DockerManager {
   }
 
   /**
+   * Create a file in the container
+   */
+  async createFile(containerId: string, filePath: string, content: string): Promise<void> {
+    // Use echo with heredoc to create file
+    const command = ['sh', '-c', `cat > ${filePath} << 'EOFMARKER'\n${content}\nEOFMARKER`];
+    await this.executeCommand(containerId, command);
+  }
+
+  /**
+   * Create a directory in the container
+   */
+  async createDirectory(containerId: string, dirPath: string): Promise<void> {
+    await this.executeCommand(containerId, ['mkdir', '-p', dirPath]);
+  }
+
+  /**
+   * Read a file from the container
+   */
+  async readFile(containerId: string, filePath: string): Promise<string> {
+    const result = await this.executeCommand(containerId, ['cat', filePath]);
+    return result.stdout;
+  }
+
+  /**
+   * Check if file exists in container
+   */
+  async fileExists(containerId: string, filePath: string): Promise<boolean> {
+    const result = await this.executeCommand(containerId, ['test', '-f', filePath]);
+    return result.exitCode === 0;
+  }
+
+  /**
    * Pull Docker image
    */
   private async pullImage(image: string): Promise<void> {

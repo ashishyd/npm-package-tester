@@ -15,14 +15,20 @@ import {
 } from '../domain/models/types';
 import { DockerManager } from './DockerManager';
 import { PackageAnalyzer } from './PackageAnalyzer';
+import { ScenarioRunner } from './ScenarioRunner';
+import { ScenarioGenerator } from '../ai/ScenarioGenerator';
 
 export class TestRunner {
   private readonly dockerManager: DockerManager;
   private readonly packageAnalyzer: PackageAnalyzer;
+  private readonly scenarioRunner: ScenarioRunner;
+  private readonly scenarioGenerator: ScenarioGenerator;
 
   constructor() {
     this.dockerManager = new DockerManager();
     this.packageAnalyzer = new PackageAnalyzer();
+    this.scenarioRunner = new ScenarioRunner(this.dockerManager);
+    this.scenarioGenerator = new ScenarioGenerator(this.dockerManager);
   }
 
   /**
@@ -118,43 +124,88 @@ export class TestRunner {
       // Install package
       await this.dockerManager.installPackage(container.id, packageInfo.name, onProgress);
 
-      // Test each command
-      for (const command of packageInfo.commands) {
+      // Generate AI scenarios if configured
+      if (config.ai) {
         this.emitProgress(onProgress, {
           stage: TestStage.TESTING_COMMAND,
-          message: `Testing ${command.name} in Node ${nodeVersion}`,
-          currentCommand: command.name,
+          message: '🤖 Generating test scenarios with AI...',
         });
 
-        // Test --help
-        const helpResult = await this.testCommand(
-          container.id,
-          command.name,
-          ['--help'],
-          nodeVersion,
-          command,
-        );
-        results.push(helpResult);
+        try {
+          const aiScenarios = await this.scenarioGenerator.generateScenarios(
+            packageInfo,
+            config.ai,
+            container.id,
+          );
 
-        // Test --version
-        const versionResult = await this.testCommand(
-          container.id,
-          command.name,
-          ['--version'],
-          nodeVersion,
-          command,
-        );
-        results.push(versionResult);
+          this.emitProgress(onProgress, {
+            stage: TestStage.TESTING_COMMAND,
+            message: `✨ Generated ${aiScenarios.length} AI test scenarios`,
+          });
 
-        // Test no args
-        const noArgsResult = await this.testCommand(
-          container.id,
-          command.name,
-          [],
-          nodeVersion,
-          command,
-        );
-        results.push(noArgsResult);
+          // Run AI-generated scenarios
+          for (const scenario of aiScenarios) {
+            const command = packageInfo.commands[0]; // Use first command
+            const result = await this.scenarioRunner.runScenario(
+              container.id,
+              packageInfo.name,
+              command.name,
+              scenario,
+              nodeVersion,
+              command,
+              onProgress,
+            );
+            results.push(result);
+          }
+        } catch (error) {
+          this.emitProgress(onProgress, {
+            stage: TestStage.ERROR,
+            message: `AI scenario generation failed: ${(error as Error).message}`,
+          });
+          console.error('AI Error:', error);
+        }
+      }
+
+      // Run default tests if not skipped
+      if (!config.skipDefaultTests) {
+        // Test each command
+        for (const command of packageInfo.commands) {
+          this.emitProgress(onProgress, {
+            stage: TestStage.TESTING_COMMAND,
+            message: `Testing ${command.name} in Node ${nodeVersion}`,
+            currentCommand: command.name,
+          });
+
+          // Test --help
+          const helpResult = await this.testCommand(
+            container.id,
+            command.name,
+            ['--help'],
+            nodeVersion,
+            command,
+          );
+          results.push(helpResult);
+
+          // Test --version
+          const versionResult = await this.testCommand(
+            container.id,
+            command.name,
+            ['--version'],
+            nodeVersion,
+            command,
+          );
+          results.push(versionResult);
+
+          // Test no args
+          const noArgsResult = await this.testCommand(
+            container.id,
+            command.name,
+            [],
+            nodeVersion,
+            command,
+          );
+          results.push(noArgsResult);
+        }
       }
     }
 
@@ -261,6 +312,9 @@ export class TestRunner {
       timeout: partial.timeout || 30000,
       keepContainers: partial.keepContainers !== undefined ? partial.keepContainers : false,
       customTests: partial.customTests || [],
+      scenarios: partial.scenarios,
+      skipDefaultTests: partial.skipDefaultTests || false,
+      ai: partial.ai,
     };
   }
 
