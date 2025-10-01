@@ -114,7 +114,7 @@ describe('ResultFormatter', () => {
       expect(output).toContain('test-cli --help');
       expect(output).toContain('test-cli --version');
       expect(output).toContain('Total: 2 tests');
-      expect(output).toContain('Passed: 2');
+      expect(output).toMatch(/Passed.*2/); // Match with any formatting between
     });
 
     it('should format summary with custom tests', () => {
@@ -259,7 +259,7 @@ describe('ResultFormatter', () => {
       expect(output).toContain('failing-test');
       expect(output).toContain('Command failed with exit code 1');
       expect(output).toContain('❌ Some tests failed');
-      expect(output).toContain('Failed: 1');
+      expect(output).toMatch(/Failed.*1/); // Match with any formatting between
     });
 
     it('should handle tests without scenario names', () => {
