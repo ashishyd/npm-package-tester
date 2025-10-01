@@ -57,7 +57,7 @@ export class DockerManager {
       Labels: {
         'npm-package-tester': 'true',
         'node-version': environment.nodeVersion,
-        'package': packageName,
+        package: packageName,
       },
       WorkingDir: '/test',
     });

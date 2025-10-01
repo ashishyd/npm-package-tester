@@ -101,7 +101,9 @@ export class ResultFormatter {
   /**
    * Group results by Node version
    */
-  private groupByNodeVersion(results: readonly CommandTestResult[]): Record<string, CommandTestResult[]> {
+  private groupByNodeVersion(
+    results: readonly CommandTestResult[],
+  ): Record<string, CommandTestResult[]> {
     const grouped: Record<string, CommandTestResult[]> = {};
 
     for (const result of results) {

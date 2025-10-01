@@ -67,7 +67,11 @@ describe('PackageAnalyzer', () => {
     });
 
     it('should identify alias command', () => {
-      const result = (analyzer as any).determineCommandType('cycfix', 'cyclic-dependency-fixer', false);
+      const result = (analyzer as any).determineCommandType(
+        'cycfix',
+        'cyclic-dependency-fixer',
+        false,
+      );
       expect(result).toBe(CommandType.ALIAS);
     });
 

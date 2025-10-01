@@ -1,5 +1,5 @@
 {
-  "name": "npm-package-tester",
+  "name": "@ashish.yd/npm-package-tester",
   "version": "0.1.0",
   "description": "Automatically test npm packages by discovering CLI commands and running them in Docker environments",
   "main": "dist/index.js",

@@ -127,8 +127,9 @@ export class PackageAnalyzer {
     // Check if command name is an abbreviation (e.g., "cycfix" from "cyclic-dependency-fixer")
     const packageParts = packageName.split('-');
     const initials = packageParts.map((part) => part.charAt(0)).join('');
-    const isAbbreviation = commandName.startsWith(initials) ||
-                          packageParts.some((part) => commandName.startsWith(part.substring(0, 3)));
+    const isAbbreviation =
+      commandName.startsWith(initials) ||
+      packageParts.some((part) => commandName.startsWith(part.substring(0, 3)));
     if (isAbbreviation && !isFirst) {
       return CommandType.ALIAS;
     }
