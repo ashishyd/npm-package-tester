@@ -1,7 +1,7 @@
 {
   "name": "@ashish.yd/npm-package-tester",
   "version": "1.0.0",
-  "description": "Automatically test npm packages by discovering CLI commands and running them in Docker environments",
+  "description": "AI-powered CLI testing tool for npm packages with Docker isolation, private package support, and automated test generation using Claude, GPT-4, Gemini",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -27,17 +27,50 @@
   },
   "keywords": [
     "npm",
-    "package",
     "testing",
     "cli",
+    "cli-testing",
+    "npm-testing",
+    "package-testing",
     "docker",
-    "smoke-test",
-    "validation",
+    "docker-testing",
     "automation",
-    "command-detection"
+    "ci-cd",
+    "continuous-integration",
+    "smoke-test",
+    "integration-testing",
+    "e2e-testing",
+    "end-to-end",
+    "ai",
+    "ai-testing",
+    "artificial-intelligence",
+    "claude",
+    "anthropic",
+    "openai",
+    "gpt-4",
+    "gemini",
+    "groq",
+    "llm",
+    "private-packages",
+    "npm-registry",
+    "scoped-packages",
+    "command-detection",
+    "validation",
+    "test-automation",
+    "typescript",
+    "nodejs",
+    "node"
   ],
-  "author": "Your Name",
+  "author": "Ashish Yadav <ashish.yd@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/ashishyd/npm-package-tester#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashishyd/npm-package-tester.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ashishyd/npm-package-tester/issues"
+  },
   "engines": {
     "node": ">=16.0.0"
   },

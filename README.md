@@ -1,6 +1,41 @@
 # npm-package-tester
 
+[![npm version](https://badge.fury.io/js/%40ashish.yd%2Fnpm-package-tester.svg)](https://www.npmjs.com/package/@ashish.yd/npm-package-tester)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ashishyd/npm-package-tester/pulls)
+[![GitHub issues](https://img.shields.io/github/issues/ashishyd/npm-package-tester.svg)](https://github.com/ashishyd/npm-package-tester/issues)
+[![GitHub stars](https://img.shields.io/github/stars/ashishyd/npm-package-tester.svg?style=social)](https://github.com/ashishyd/npm-package-tester)
+
 🧪 **Automatically test npm packages by discovering their CLI commands and running them in isolated Docker environments**
+
+🤖 **AI-Powered**: Generate realistic test scenarios using Claude, GPT-4, Gemini, or Groq
+🔐 **Private Packages**: Full support for private npm packages and custom registries
+⚡ **Fast & Reliable**: Run tests in parallel across multiple Node versions
+
+---
+
+## Table of Contents
+
+- [The Problem](#the-problem)
+- [The Solution](#the-solution)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Example Output](#example-output)
+- [AI-Powered Testing](#ai-powered-testing)
+- [Testing Private Packages](#testing-private-packages)
+- [CLI Options](#cli-options)
+- [How It Works](#how-it-works)
+- [Use Cases](#use-cases)
+- [Configuration](#configuration)
+- [API Usage](#api-usage)
+- [Architecture](#architecture)
+- [Requirements](#requirements)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## The Problem
 
@@ -389,11 +424,51 @@ npm-package-tester
 
 ## Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md)
+We welcome contributions! Here's how you can help:
+
+### Ways to Contribute
+
+- 🐛 **Report Bugs**: [Create a bug report](https://github.com/ashishyd/npm-package-tester/issues/new?template=bug_report.yml)
+- 💡 **Suggest Features**: [Request a feature](https://github.com/ashishyd/npm-package-tester/issues/new?template=feature_request.yml)
+- 📝 **Improve Documentation**: Fix typos, add examples, clarify instructions
+- 🧪 **Add Tests**: Increase test coverage
+- 🔧 **Fix Issues**: Check out [good first issues](https://github.com/ashishyd/npm-package-tester/labels/good%20first%20issue)
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/ashishyd/npm-package-tester.git
+cd npm-package-tester
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Run tests
+npm test
+
+# Run linting
+npm run lint
+```
+
+### Guidelines
+
+- Follow the existing code style
+- Write tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting PR
+- Keep PRs focused on a single feature or bug fix
+
+### Code of Conduct
+
+Be respectful, inclusive, and constructive. We're all here to learn and build great tools together!
 
 ## License
 
-MIT
+MIT © [Ashish Yadav](https://github.com/ashishyd)
 
 ## Related Projects
 
@@ -401,6 +476,15 @@ MIT
 - [verdaccio](https://verdaccio.org/) - Private npm registry
 - [np](https://github.com/sindresorhus/np) - Better npm publish
 
+## Support
+
+- 📖 [Documentation](https://github.com/ashishyd/npm-package-tester#readme)
+- 💬 [GitHub Discussions](https://github.com/ashishyd/npm-package-tester/discussions)
+- 🐛 [Issue Tracker](https://github.com/ashishyd/npm-package-tester/issues)
+- 📧 [Email](mailto:ashish.yd@gmail.com)
+
 ---
 
 **Made with ❤️ for npm package authors**
+
+⭐ Star us on GitHub if you find this useful!
