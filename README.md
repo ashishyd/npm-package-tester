@@ -29,9 +29,11 @@ When you publish an npm package with CLI commands, you need to verify:
 - 🐳 **Docker Isolation**: Tests in clean environments
 - 🔄 **Multi-Version**: Test across Node 16, 18, 20, etc.
 - ⚡ **Parallel Testing**: Run tests concurrently for speed
-- 📊 **Detailed Reports**: Clear pass/fail results with logs
+- 📊 **Detailed Reports**: Clear pass/fail results with complete test breakdown
 - 🎯 **Smart Testing**: Automatically tries --help, --version, and no-args
 - 🤖 **AI-Powered Scenarios**: Generate realistic test scenarios using Claude, GPT-4, Gemini, or Groq
+- 🔐 **Private Packages**: Full support for private npm packages with authentication
+- 📦 **Custom Registries**: Works with private npm registries
 - 💨 **Lightweight**: Minimal dependencies, fast execution
 
 ## Quick Start
@@ -55,31 +57,71 @@ npt test env-type-generator --ai-provider anthropic --ai-token YOUR_API_KEY
 # Use OpenAI instead
 npt test my-package --ai-provider openai --ai-token YOUR_OPENAI_KEY
 
+# Test private packages
+npt test @your-org/private-package --npm-token YOUR_NPM_TOKEN
+
+# Test from custom registry
+npt test @company/package --npm-registry https://npm.company.com --npm-token YOUR_TOKEN
+
 # Keep containers for debugging
 npt test --keep-containers
 ```
 
 ## Example Output
 
+### Default Testing
 ```
-📦 Analyzing package: eslint
-✓ Found 1 CLI command: eslint
+📦 Package: eslint
+   Version: 8.50.0
 
-🐳 Testing in Node 20...
+🐳 Node 20
   ✓ eslint --help (125ms)
   ✓ eslint --version (98ms)
   ✓ eslint [no args] (102ms)
 
-🐳 Testing in Node 18...
-  ✓ eslint --help (118ms)
-  ✓ eslint --version (95ms)
-  ✓ eslint [no args] (105ms)
+📊 Summary
+──────────────────────────────────────────────────
+  Total: 3 tests
+  Passed: 3
+  Failed: 0
+  Duration: 325ms
+
+📋 Test Details
+──────────────────────────────────────────────────
+
+  🎯 Default Tests
+    ✓ eslint --help (125ms)
+    ✓ eslint --version (98ms)
+    ✓ eslint (no args) (102ms)
+
+✅ All tests passed!
+```
+
+### AI-Powered Testing
+```
+📦 Package: env-type-generator
+   Version: 1.0.0
+   Auto-generate TypeScript types from .env files with zero config
+
+🐳 Node 20
+  ✓ env-type-gen (1512ms)
+  ✓ env-type-gen (4871ms)
+  ✓ env-type-gen (1307ms)
 
 📊 Summary
-  Total: 6 tests
-  Passed: 6
+──────────────────────────────────────────────────
+  Total: 3 tests
+  Passed: 3
   Failed: 0
-  Duration: 643ms
+  Duration: 7690ms
+
+📋 Test Details
+──────────────────────────────────────────────────
+
+  🤖 AI-Generated Tests
+    ✓ basic-type-generation (1512ms)
+    ✓ multiple-env-files-with-parsing -e .env .env.local -p (4871ms)
+    ✓ strict-mode-all-required -e .env.example -o ./types/env.d.ts (1307ms)
 
 ✅ All tests passed!
 ```
@@ -200,6 +242,8 @@ Options:
   -p, --parallel               Run tests in parallel
   -k, --keep-containers        Keep containers after test
   -t, --timeout <ms>           Timeout per test (default: 30000)
+  --npm-token <token>          npm authentication token for private packages
+  --npm-registry <url>         Custom npm registry URL
   --ai-provider <provider>     AI provider (anthropic, openai, google, groq)
   --ai-token <token>           AI API token/key
   --ai-model <model>           AI model name (optional, auto-detects best)
@@ -249,6 +293,48 @@ The AI will:
 | **Groq** | Llama 3.3 70B | Get key from [console.groq.com](https://console.groq.com) |
 
 The best model for each provider is automatically selected.
+
+## Testing Private Packages
+
+`npm-package-tester` fully supports private npm packages with authentication:
+
+### Using npm Token
+
+```bash
+# Test private package from npm registry
+npt test @your-org/private-package --npm-token YOUR_NPM_TOKEN
+
+# Get your npm token from ~/.npmrc or create one with:
+# npm token create --read-only
+```
+
+### Using Custom Registry
+
+```bash
+# Test from private registry (like Verdaccio, Artifactory, GitHub Packages)
+npt test @company/package \
+  --npm-registry https://npm.company.com \
+  --npm-token YOUR_REGISTRY_TOKEN
+```
+
+### How it Works
+
+1. The tool creates a `.npmrc` file in the Docker container
+2. Configures authentication with your token
+3. Installs the package securely
+4. Runs all tests normally
+
+**Security Note**: Tokens are only used within isolated Docker containers and are not stored or logged.
+
+### Supported Registries
+
+- ✅ npm (private packages)
+- ✅ GitHub Packages
+- ✅ GitLab Package Registry
+- ✅ Verdaccio
+- ✅ JFrog Artifactory
+- ✅ Azure Artifacts
+- ✅ Any npm-compatible registry
 
 ## Architecture
 

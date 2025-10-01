@@ -121,8 +121,14 @@ export class TestRunner {
         onProgress,
       );
 
-      // Install package
-      await this.dockerManager.installPackage(container.id, packageInfo.name, onProgress);
+      // Install package with authentication if needed
+      await this.dockerManager.installPackage(
+        container.id,
+        packageInfo.name,
+        onProgress,
+        config.npmToken,
+        config.npmRegistry,
+      );
 
       // Generate AI scenarios if configured
       if (config.ai) {
@@ -155,7 +161,13 @@ export class TestRunner {
               command,
               onProgress,
             );
-            results.push(result);
+            // Mark as AI-generated test
+            results.push({
+              ...result,
+              scenarioName: scenario.name,
+              testType: 'ai-generated' as const,
+              args: scenario.args || [],
+            });
           }
         } catch (error) {
           this.emitProgress(onProgress, {
@@ -184,7 +196,12 @@ export class TestRunner {
             nodeVersion,
             command,
           );
-          results.push(helpResult);
+          results.push({
+            ...helpResult,
+            scenarioName: `${command.name} --help`,
+            testType: 'default' as const,
+            args: ['--help'],
+          });
 
           // Test --version
           const versionResult = await this.testCommand(
@@ -194,7 +211,12 @@ export class TestRunner {
             nodeVersion,
             command,
           );
-          results.push(versionResult);
+          results.push({
+            ...versionResult,
+            scenarioName: `${command.name} --version`,
+            testType: 'default' as const,
+            args: ['--version'],
+          });
 
           // Test no args
           const noArgsResult = await this.testCommand(
@@ -204,7 +226,12 @@ export class TestRunner {
             nodeVersion,
             command,
           );
-          results.push(noArgsResult);
+          results.push({
+            ...noArgsResult,
+            scenarioName: `${command.name} (no args)`,
+            testType: 'default' as const,
+            args: [],
+          });
         }
       }
     }
@@ -315,6 +342,8 @@ export class TestRunner {
       scenarios: partial.scenarios,
       skipDefaultTests: partial.skipDefaultTests || false,
       ai: partial.ai,
+      npmToken: partial.npmToken,
+      npmRegistry: partial.npmRegistry,
     };
   }
 

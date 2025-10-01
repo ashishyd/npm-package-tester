@@ -25,6 +25,8 @@ program
   .option('-p, --parallel', 'Run tests in parallel', false)
   .option('-k, --keep-containers', 'Keep containers after test', false)
   .option('-t, --timeout <ms>', 'Timeout per test in milliseconds', '30000')
+  .option('--npm-token <token>', 'npm authentication token for private packages')
+  .option('--npm-registry <url>', 'Custom npm registry URL')
   .option('--no-help', 'Skip --help tests')
   .option('--no-version', 'Skip --version tests')
   .option('--ai-provider <provider>', 'AI provider (anthropic, openai, google, groq)')
@@ -57,6 +59,8 @@ program
         timeout: parseInt(options.timeout, 10),
         skipDefaultTests: options.aiProvider ? true : false, // Skip default tests if using AI
         ai: aiConfig,
+        npmToken: options.npmToken,
+        npmRegistry: options.npmRegistry,
       };
 
       const result = await testRunner.testPackage(packageSource, config, (event) => {

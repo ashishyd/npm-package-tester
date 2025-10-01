@@ -68,6 +68,10 @@ export interface TestConfig {
   readonly skipDefaultTests?: boolean;
   /** AI configuration for automatic scenario generation */
   readonly ai?: AIConfig;
+  /** npm authentication token for private packages */
+  readonly npmToken?: string;
+  /** Custom npm registry URL */
+  readonly npmRegistry?: string;
 }
 
 /**
@@ -218,6 +222,12 @@ export interface CommandTestResult {
   readonly hasHelpOutput: boolean;
   /** Version output detected */
   readonly hasVersionOutput: boolean;
+  /** Test scenario name (if from AI or custom scenario) */
+  readonly scenarioName?: string;
+  /** Test type (default, ai-generated, custom) */
+  readonly testType?: 'default' | 'ai-generated' | 'custom';
+  /** Command arguments used */
+  readonly args?: readonly string[];
 }
 
 /**

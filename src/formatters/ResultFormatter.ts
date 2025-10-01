@@ -50,6 +50,53 @@ export class ResultFormatter {
     lines.push(`  Duration: ${summary.duration}ms`);
     lines.push('');
 
+    // Detailed test breakdown
+    lines.push(chalk.bold('📋 Test Details'));
+    lines.push(chalk.gray('─'.repeat(50)));
+    lines.push('');
+
+    // Group by test type
+    const aiTests = summary.results.filter((r) => r.testType === 'ai-generated');
+    const defaultTests = summary.results.filter((r) => r.testType === 'default');
+    const customTests = summary.results.filter((r) => r.testType === 'custom');
+
+    if (aiTests.length > 0) {
+      lines.push(chalk.bold.cyan('  🤖 AI-Generated Tests'));
+      for (const test of aiTests) {
+        const icon = test.passed ? chalk.green('  ✓') : chalk.red('  ✗');
+        const args = test.args && test.args.length > 0 ? ` ${test.args.join(' ')}` : '';
+        lines.push(`  ${icon} ${test.scenarioName || test.command.name}${args} ${chalk.gray(`(${test.duration}ms)`)}`);
+        if (!test.passed && test.error) {
+          lines.push(`      ${chalk.red(test.error)}`);
+        }
+      }
+      lines.push('');
+    }
+
+    if (defaultTests.length > 0) {
+      lines.push(chalk.bold.yellow('  🎯 Default Tests'));
+      for (const test of defaultTests) {
+        const icon = test.passed ? chalk.green('  ✓') : chalk.red('  ✗');
+        lines.push(`  ${icon} ${test.scenarioName || test.command.name} ${chalk.gray(`(${test.duration}ms)`)}`);
+        if (!test.passed && test.error) {
+          lines.push(`      ${chalk.red(test.error)}`);
+        }
+      }
+      lines.push('');
+    }
+
+    if (customTests.length > 0) {
+      lines.push(chalk.bold.magenta('  🎨 Custom Tests'));
+      for (const test of customTests) {
+        const icon = test.passed ? chalk.green('  ✓') : chalk.red('  ✗');
+        lines.push(`  ${icon} ${test.scenarioName || test.command.name} ${chalk.gray(`(${test.duration}ms)`)}`);
+        if (!test.passed && test.error) {
+          lines.push(`      ${chalk.red(test.error)}`);
+        }
+      }
+      lines.push('');
+    }
+
     // Final result
     if (summary.success) {
       lines.push(chalk.green.bold('✅ All tests passed!'));

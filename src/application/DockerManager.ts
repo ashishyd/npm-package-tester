@@ -80,12 +80,46 @@ export class DockerManager {
   }
 
   /**
+   * Configure npm authentication in container
+   */
+  async configureNpmAuth(
+    containerId: string,
+    npmToken?: string,
+    npmRegistry?: string,
+  ): Promise<void> {
+    if (!npmToken && !npmRegistry) {
+      return; // No authentication needed
+    }
+
+    let npmrcContent = '';
+
+    if (npmRegistry) {
+      npmrcContent += `registry=${npmRegistry}\n`;
+    }
+
+    if (npmToken) {
+      // Determine registry for token authentication
+      const registry = npmRegistry || 'https://registry.npmjs.org/';
+      const registryHost = new URL(registry).hostname;
+
+      // Add authentication token
+      npmrcContent += `//${registryHost}/:_authToken=${npmToken}\n`;
+      npmrcContent += `always-auth=true\n`;
+    }
+
+    // Create .npmrc in container
+    await this.createFile(containerId, '/root/.npmrc', npmrcContent);
+  }
+
+  /**
    * Install package in container
    */
   async installPackage(
     containerId: string,
     packageName: string,
     onProgress?: (event: ProgressEvent) => void,
+    npmToken?: string,
+    npmRegistry?: string,
   ): Promise<void> {
     if (onProgress) {
       onProgress({
@@ -93,6 +127,9 @@ export class DockerManager {
         message: `Installing ${packageName}`,
       });
     }
+
+    // Configure npm authentication if provided
+    await this.configureNpmAuth(containerId, npmToken, npmRegistry);
 
     await this.executeCommand(containerId, ['npm', 'install', '-g', packageName]);
   }
