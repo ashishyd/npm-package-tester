@@ -1,6 +1,6 @@
 {
-  "name": "@ashish.yd/npm-package-tester",
-  "version": "1.0.0",
+  "name": "@kitiumai/npm-package-tester",
+  "version": "1.0.1",
   "description": "AI-powered CLI testing tool for npm packages with Docker isolation, private package support, and automated test generation using Claude, GPT-4, Gemini",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -63,13 +63,16 @@
   ],
   "author": "Ashish Yadav <ashish.yd@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/ashishyd/npm-package-tester#readme",
+  "homepage": "https://github.com/kitium-ai/npm-package-tester#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ashishyd/npm-package-tester.git"
+    "url": "git+https://github.com/kitium-ai/npm-package-tester.git"
   },
   "bugs": {
-    "url": "https://github.com/ashishyd/npm-package-tester/issues"
+    "url": "https://github.com/kitium-ai/npm-package-tester/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=16.0.0"

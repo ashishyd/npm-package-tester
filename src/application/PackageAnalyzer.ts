@@ -5,7 +5,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import execa from 'execa';
-import { PackageInfo, CLICommand, CommandType } from '../domain/models/types';
+import { PackageInfo, CLICommand, CommandType, CLIExample } from '../domain/models/types';
 
 export class PackageAnalyzer {
   /**
@@ -57,6 +57,7 @@ export class PackageAnalyzer {
     const engines = packageJson.engines as Record<string, string> | undefined;
 
     const commands = this.extractCommands(packageJson);
+    const examples = this.extractExamples(packageJson);
 
     return {
       name,
@@ -66,6 +67,7 @@ export class PackageAnalyzer {
       dependencies,
       peerDependencies,
       engines,
+      examples,
     };
   }
 
@@ -104,6 +106,30 @@ export class PackageAnalyzer {
     }
 
     return commands;
+  }
+
+  /**
+   * Extract examples from npt.examples field
+   */
+  private extractExamples(packageJson: Record<string, unknown>): CLIExample[] | undefined {
+    const npt = packageJson.npt as Record<string, unknown> | undefined;
+
+    if (!npt || !npt.examples) {
+      return undefined;
+    }
+
+    const examples = npt.examples as Array<Record<string, unknown>>;
+
+    if (!Array.isArray(examples)) {
+      return undefined;
+    }
+
+    return examples
+      .filter((ex) => typeof ex.command === 'string' && typeof ex.description === 'string')
+      .map((ex) => ({
+        command: ex.command as string,
+        description: ex.description as string,
+      }));
   }
 
   /**

@@ -20,6 +20,18 @@ export interface PackageInfo {
   readonly peerDependencies?: Record<string, string>;
   /** Engines specification */
   readonly engines?: Record<string, string>;
+  /** Example commands from npt.examples field */
+  readonly examples?: readonly CLIExample[];
+}
+
+/**
+ * Example CLI command from npt.examples field
+ */
+export interface CLIExample {
+  /** The command to run */
+  readonly command: string;
+  /** Description of what it does */
+  readonly description: string;
 }
 
 /**

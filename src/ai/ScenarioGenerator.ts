@@ -47,6 +47,7 @@ export class ScenarioGenerator {
       readme,
       cliHelp,
       packageInfo.commands.map((c) => c.name),
+      packageInfo.examples,
     );
 
     return scenarios;

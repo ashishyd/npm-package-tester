@@ -4,9 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ashishyd/npm-package-tester/pulls)
-[![GitHub issues](https://img.shields.io/github/issues/ashishyd/npm-package-tester.svg)](https://github.com/ashishyd/npm-package-tester/issues)
-[![GitHub stars](https://img.shields.io/github/stars/ashishyd/npm-package-tester.svg?style=social)](https://github.com/ashishyd/npm-package-tester)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/kitium-ai/npm-package-tester/pulls)
+[![GitHub issues](https://img.shields.io/github/issues/kitium-ai/npm-package-tester.svg)](https://github.com/kitium-ai/npm-package-tester/issues)
+[![GitHub stars](https://img.shields.io/github/stars/kitium-ai/npm-package-tester.svg?style=social)](https://github.com/kitium-ai/npm-package-tester)
 
 🧪 **Automatically test npm packages by discovering their CLI commands and running them in isolated Docker environments**
 
@@ -428,17 +428,17 @@ We welcome contributions! Here's how you can help:
 
 ### Ways to Contribute
 
-- 🐛 **Report Bugs**: [Create a bug report](https://github.com/ashishyd/npm-package-tester/issues/new?template=bug_report.yml)
-- 💡 **Suggest Features**: [Request a feature](https://github.com/ashishyd/npm-package-tester/issues/new?template=feature_request.yml)
+- 🐛 **Report Bugs**: [Create a bug report](https://github.com/kitium-ai/npm-package-tester/issues/new?template=bug_report.yml)
+- 💡 **Suggest Features**: [Request a feature](https://github.com/kitium-ai/npm-package-tester/issues/new?template=feature_request.yml)
 - 📝 **Improve Documentation**: Fix typos, add examples, clarify instructions
 - 🧪 **Add Tests**: Increase test coverage
-- 🔧 **Fix Issues**: Check out [good first issues](https://github.com/ashishyd/npm-package-tester/labels/good%20first%20issue)
+- 🔧 **Fix Issues**: Check out [good first issues](https://github.com/kitium-ai/npm-package-tester/labels/good%20first%20issue)
 
 ### Development Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/ashishyd/npm-package-tester.git
+git clone https://github.com/kitium-ai/npm-package-tester.git
 cd npm-package-tester
 
 # Install dependencies
@@ -468,7 +468,7 @@ Be respectful, inclusive, and constructive. We're all here to learn and build gr
 
 ## License
 
-MIT © [Ashish Yadav](https://github.com/ashishyd)
+MIT © [Ashish Yadav](https://github.com/kitium-ai)
 
 ## Related Projects
 
@@ -478,9 +478,9 @@ MIT © [Ashish Yadav](https://github.com/ashishyd)
 
 ## Support
 
-- 📖 [Documentation](https://github.com/ashishyd/npm-package-tester#readme)
-- 💬 [GitHub Discussions](https://github.com/ashishyd/npm-package-tester/discussions)
-- 🐛 [Issue Tracker](https://github.com/ashishyd/npm-package-tester/issues)
+- 📖 [Documentation](https://github.com/kitium-ai/npm-package-tester#readme)
+- 💬 [GitHub Discussions](https://github.com/kitium-ai/npm-package-tester/discussions)
+- 🐛 [Issue Tracker](https://github.com/kitium-ai/npm-package-tester/issues)
 - 📧 [Email](mailto:ashish.yd@gmail.com)
 
 ---

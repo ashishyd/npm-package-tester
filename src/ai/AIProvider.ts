@@ -2,7 +2,7 @@
  * AI Provider abstraction for generating test scenarios
  */
 
-import { AIConfig, AIProvider, TestScenario } from '../domain/models/types';
+import { AIConfig, AIProvider, TestScenario, CLIExample } from '../domain/models/types';
 
 export interface AIProviderClient {
   generateScenarios(
@@ -11,6 +11,7 @@ export interface AIProviderClient {
     readme: string,
     cliHelp: string,
     commands: string[],
+    examples?: readonly CLIExample[],
   ): Promise<TestScenario[]>;
 }
 
@@ -61,8 +62,16 @@ class AnthropicProvider implements AIProviderClient {
     readme: string,
     cliHelp: string,
     commands: string[],
+    examples?: readonly CLIExample[],
   ): Promise<TestScenario[]> {
-    const prompt = this.buildPrompt(packageName, packageDescription, readme, cliHelp, commands);
+    const prompt = this.buildPrompt(
+      packageName,
+      packageDescription,
+      readme,
+      cliHelp,
+      commands,
+      examples,
+    );
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -100,7 +109,13 @@ class AnthropicProvider implements AIProviderClient {
     readme: string,
     cliHelp: string,
     commands: string[],
+    examples?: readonly CLIExample[],
   ): string {
+    const examplesSection =
+      examples && examples.length > 0
+        ? `\n\nCommand Examples (USE THESE EXACT COMMAND SYNTAXES):\n${examples.map((ex) => `- ${ex.command}\n  Description: ${ex.description}`).join('\n')}\n`
+        : '';
+
     return `You are a test scenario generator for npm CLI packages. Your task is to create realistic test scenarios that validate the package functionality.
 
 Package Information:
@@ -112,7 +127,9 @@ README:
 ${readme.substring(0, 2000)}
 
 CLI Help Output:
-${cliHelp}
+${cliHelp}${examplesSection}
+
+IMPORTANT: If Command Examples are provided above, you MUST use those exact command syntaxes in your test scenarios. Do not invent different option names or arguments.
 
 Generate 2-4 realistic test scenarios that:
 1. Create appropriate input files/project structure
@@ -180,8 +197,16 @@ class OpenAIProvider implements AIProviderClient {
     readme: string,
     cliHelp: string,
     commands: string[],
+    examples?: readonly CLIExample[],
   ): Promise<TestScenario[]> {
-    const prompt = this.buildPrompt(packageName, packageDescription, readme, cliHelp, commands);
+    const prompt = this.buildPrompt(
+      packageName,
+      packageDescription,
+      readme,
+      cliHelp,
+      commands,
+      examples,
+    );
 
     const baseUrl = this.config.baseUrl || 'https://api.openai.com/v1';
     const response = await fetch(`${baseUrl}/chat/completions`, {
@@ -219,7 +244,13 @@ class OpenAIProvider implements AIProviderClient {
     readme: string,
     cliHelp: string,
     commands: string[],
+    examples?: readonly CLIExample[],
   ): string {
+    const examplesSection =
+      examples && examples.length > 0
+        ? `\nCommand Examples (USE THESE EXACT SYNTAXES): ${examples.map((ex) => `${ex.command} - ${ex.description}`).join('; ')}`
+        : '';
+
     // Same prompt structure as Anthropic
     return `You are a test scenario generator for npm CLI packages. Generate realistic test scenarios in JSON format.
 
@@ -227,7 +258,9 @@ Package: ${packageName}
 Description: ${packageDescription}
 Commands: ${commands.join(', ')}
 README: ${readme.substring(0, 2000)}
-CLI Help: ${cliHelp}
+CLI Help: ${cliHelp}${examplesSection}
+
+IMPORTANT: If Command Examples are provided, use those exact command syntaxes in your scenarios.
 
 Return a JSON object with a "scenarios" array containing 2-4 test scenarios.`;
   }
@@ -250,11 +283,19 @@ class GoogleProvider implements AIProviderClient {
   async generateScenarios(
     packageName: string,
     packageDescription: string,
-    _readme: string,
-    _cliHelp: string,
-    _commands: string[],
+    readme: string,
+    cliHelp: string,
+    commands: string[],
+    examples?: readonly CLIExample[],
   ): Promise<TestScenario[]> {
-    const prompt = `Generate test scenarios for ${packageName}: ${packageDescription}`;
+    const prompt = this.buildPrompt(
+      packageName,
+      packageDescription,
+      readme,
+      cliHelp,
+      commands,
+      examples,
+    );
 
     const baseUrl =
       this.config.baseUrl || 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -289,6 +330,71 @@ class GoogleProvider implements AIProviderClient {
     return this.parseScenarios(content);
   }
 
+  private buildPrompt(
+    packageName: string,
+    packageDescription: string,
+    readme: string,
+    cliHelp: string,
+    commands: string[],
+    examples?: readonly CLIExample[],
+  ): string {
+    const examplesSection =
+      examples && examples.length > 0
+        ? `\n\nCommand Examples (USE THESE EXACT COMMAND SYNTAXES):\n${examples.map((ex) => `- ${ex.command}\n  Description: ${ex.description}`).join('\n')}\n`
+        : '';
+
+    return `You are a test scenario generator for npm CLI packages. Your task is to create realistic test scenarios that validate the package functionality.
+
+Package Information:
+- Name: ${packageName}
+- Description: ${packageDescription}
+- Commands: ${commands.join(', ')}
+
+README:
+${readme.substring(0, 2000)}
+
+CLI Help Output:
+${cliHelp}${examplesSection}
+
+IMPORTANT: If Command Examples are provided above, you MUST use those exact command syntaxes in your test scenarios. Do not invent different option names or arguments.
+
+Generate 2-4 realistic test scenarios that:
+1. Create appropriate input files/project structure
+2. Run the CLI command with realistic arguments
+3. Validate the expected output files and their contents
+
+Return ONLY a JSON array of test scenarios with this exact structure:
+[
+  {
+    "name": "scenario name",
+    "description": "what this tests",
+    "setup": {
+      "files": [
+        {"path": "relative/path/to/file", "content": "file contents"}
+      ],
+      "directories": ["dir1", "dir2"],
+      "dependencies": ["package-name"],
+      "initNpm": true
+    },
+    "command": "command-name",
+    "args": ["arg1", "arg2"],
+    "validate": {
+      "exitCode": 0,
+      "stdout": ["expected text"],
+      "filesExist": ["path/to/output"],
+      "fileContents": [
+        {
+          "path": "output/file",
+          "contains": ["expected content"]
+        }
+      ]
+    }
+  }
+]
+
+Return ONLY the JSON array, no additional text.`;
+  }
+
   private parseScenarios(content: string): TestScenario[] {
     const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     const jsonStr = jsonMatch ? jsonMatch[1] : content;
@@ -308,12 +414,20 @@ class GroqProvider implements AIProviderClient {
 
   async generateScenarios(
     packageName: string,
-    _packageDescription: string,
-    _readme: string,
-    _cliHelp: string,
-    _commands: string[],
+    packageDescription: string,
+    readme: string,
+    cliHelp: string,
+    commands: string[],
+    examples?: readonly CLIExample[],
   ): Promise<TestScenario[]> {
-    const prompt = `Generate test scenarios for npm package ${packageName}`;
+    const prompt = this.buildPrompt(
+      packageName,
+      packageDescription,
+      readme,
+      cliHelp,
+      commands,
+      examples,
+    );
 
     const baseUrl = this.config.baseUrl || 'https://api.groq.com/openai/v1';
     const response = await fetch(`${baseUrl}/chat/completions`, {
@@ -341,6 +455,71 @@ class GroqProvider implements AIProviderClient {
     const content = data.choices[0].message.content;
 
     return this.parseScenarios(content);
+  }
+
+  private buildPrompt(
+    packageName: string,
+    packageDescription: string,
+    readme: string,
+    cliHelp: string,
+    commands: string[],
+    examples?: readonly CLIExample[],
+  ): string {
+    const examplesSection =
+      examples && examples.length > 0
+        ? `\n\nCommand Examples (USE THESE EXACT COMMAND SYNTAXES):\n${examples.map((ex) => `- ${ex.command}\n  Description: ${ex.description}`).join('\n')}\n`
+        : '';
+
+    return `You are a test scenario generator for npm CLI packages. Your task is to create realistic test scenarios that validate the package functionality.
+
+Package Information:
+- Name: ${packageName}
+- Description: ${packageDescription}
+- Commands: ${commands.join(', ')}
+
+README:
+${readme.substring(0, 2000)}
+
+CLI Help Output:
+${cliHelp}${examplesSection}
+
+IMPORTANT: If Command Examples are provided above, you MUST use those exact command syntaxes in your test scenarios. Do not invent different option names or arguments.
+
+Generate 2-4 realistic test scenarios that:
+1. Create appropriate input files/project structure
+2. Run the CLI command with realistic arguments
+3. Validate the expected output files and their contents
+
+Return ONLY a JSON array of test scenarios with this exact structure:
+[
+  {
+    "name": "scenario name",
+    "description": "what this tests",
+    "setup": {
+      "files": [
+        {"path": "relative/path/to/file", "content": "file contents"}
+      ],
+      "directories": ["dir1", "dir2"],
+      "dependencies": ["package-name"],
+      "initNpm": true
+    },
+    "command": "command-name",
+    "args": ["arg1", "arg2"],
+    "validate": {
+      "exitCode": 0,
+      "stdout": ["expected text"],
+      "filesExist": ["path/to/output"],
+      "fileContents": [
+        {
+          "path": "output/file",
+          "contains": ["expected content"]
+        }
+      ]
+    }
+  }
+]
+
+Return ONLY the JSON array, no additional text.`;
   }
 
   private parseScenarios(content: string): TestScenario[] {
