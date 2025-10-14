@@ -41,7 +41,8 @@ Desktop.ini
 .temp/
 
 # Package manager files
-package-lock.json
+# Note: package-lock.json is committed for reproducible CI/CD builds
+# package-lock.json
 yarn.lock
 pnpm-lock.yaml
 .pnpm-store/
